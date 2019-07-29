@@ -1,0 +1,74 @@
+echo "# Tkinter-Weather-App" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/DimmakCoding/Tkinter-Weather-App.git
+git push -u origin master
+
+
+import tkinter as tk
+from tkinter import font
+import requests as requests
+
+
+HEIGHT = 600
+WIDTH = 700
+
+def format_response(weather):
+    try:
+        name = weather['name']
+        desc = weather['weather'][0]['description']
+        temp = weather['main']['temp']
+
+        final_str = 'City: %s \nConditions: %s \nTemperature (F): %s' % (name, desc, temp)  #str(name) + ' ' +  str(desc) + ' ' +  str(temp)
+    except:
+        final_str = 'There was a problem retrieving that information'
+
+    return final_str
+
+def test_function(entry):
+    print('This is the entry:' ,entry)
+
+
+def get_weather(city):
+    weather_key = '8c8c6e065e321d6b3a19606b78d065a5'
+    url = 'https://api.openweathermap.org/data/2.5/weather'
+    params = {'APPID': weather_key, 'q':city, 'units': 'imperial'}
+    response = requests.get(url, params=params)
+    weather = response.json()
+
+    label['text'] = format_response(weather)
+
+    print(weather['name'])
+    print(weather['weather'][0]['description'])
+    print(weather['main']['temp'])
+
+#8c8c6e065e321d6b3a19606b78d065a5
+#https://api.openweathermap.org/data/2.5/forecast?id={city ID}
+root = tk.Tk()
+
+canvas = tk.Canvas(root, height=HEIGHT, width=WIDTH)      #initial screen size
+canvas.pack()
+
+background_image = tk.PhotoImage(file='wallpaper.png')      #easy way to add image as background
+background_label = tk.Label(root, image=background_image)
+background_label.place(relwidth=1, relheight=1)
+
+frame = tk.Frame(root, bg='#1a88ff', bd=5)                        #frame.place (not .pack)
+frame.place(relx=0.5, rely=0.1,relwidth=0.75, relheight=0.1,anchor='n')
+
+entry = tk.Entry(frame, font=40)
+entry.place( relwidth=0.65, relheight=1)
+
+button = tk.Button(frame, text='Get Weather', font=40, command=lambda: get_weather(entry.get())) #lambda
+button.place(relx=0.7,  relheight=1,  relwidth=0.3)
+
+lower_frame = tk.Frame(root, bg='#1a88ff', bd=10)
+lower_frame.place(relx=0.5,rely=0.25,relwidth=0.75,relheight=0.6, anchor='n')
+
+label = tk.Label(lower_frame, font=('Courier', 18))
+label.place(relwidth=1, relheight=1)
+
+print(tk.font.families())
+
+root.mainloop()
